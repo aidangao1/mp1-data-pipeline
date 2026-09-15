@@ -26,22 +26,41 @@ def setup_logging(verbose=False):
         datefmt="%H:%M:%S",
     )
 
-
 def parse_arguments():
     """Parse command-line arguments."""
-    pass  # TODO: implement
+    parser = argparse.ArgumentParser(description="Data processing pipeline")
+    parser.add_argument("--input", "-i", required=True, help="Path to the input file")
+    parser.add_argument("--output", "-o", required=True, help="Path to the output file")
+    parser.add_argument(
+        "--format",
+        choices=["csv", "json"],
+        default="csv",
+        help="Output format (default: csv)",
+    )
+    parser.add_argument(
+        "--verbose", "-v", action="store_true", help="Enable verbose logging"
+    )
+    return parser.parse_args()
 
 
 def validate_input(filepath):
     """Check whether the input path exists and is a file."""
-    pass  # TODO: implement
-
+    if not Path(filepath).is_file():
+        logger.error(f"Input file not found: {filepath}")
+        return False
+    logger.info(f"Input file validated: {filepath}")
+    return True
 
 def main():
     """Main pipeline function."""
-    setup_logging(verbose=True)
-    logger.debug("this is a debug message")
-    logger.info("this is an info message")
+    args = parse_arguments()
+    setup_logging(args.verbose)
+    logger.debug(
+        f"Arguments parsed: input={args.input}, output={args.output}, format={args.format}"
+    )
+
+    if not validate_input(args.input):
+        sys.exit(1)
 
 
 if __name__ == "__main__":
